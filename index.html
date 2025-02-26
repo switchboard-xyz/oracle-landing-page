@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switchboard Oracle Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6EE7B7;
+            --secondary: #3B82F6;
+            --accent: #10B981;
+            --background: #0F172A;
+            --surface: rgba(30, 41, 59, 0.8);
+            --text: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --danger: #EF4444;
+            --success: #10B981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(110, 231, 183, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .status-card {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(110, 231, 183, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(110, 231, 183, 0.2);
+        }
+
+        .status-emoji {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+
+        .status-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value {
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .env-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(110, 231, 183, 0.1);
+        }
+
+        .env-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 0.5rem;
+        }
+
+        .env-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .env-value {
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            word-break: break-all;
+        }
+
+        .security-info {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(110, 231, 183, 0.1);
+        }
+
+        .security-info h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .security-info p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .oracle-info {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(110, 231, 183, 0.1);
+        }
+
+        .oracle-info h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .oracle-info p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .oracle-info ul {
+            color: var(--text-secondary);
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .oracle-info li {
+            margin-bottom: 0.5rem;
+        }
+
+        .oracle-endpoints {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(110, 231, 183, 0.1);
+        }
+
+        .oracle-endpoints h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .endpoint-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .endpoint-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid transparent;
+        }
+
+        .endpoint-tab.active {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .endpoint-content {
+            display: none;
+        }
+
+        .endpoint-content.active {
+            display: block;
+        }
+
+        .endpoint-frame {
+            width: 100%;
+            height: 300px;
+            border: none;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .endpoint-url {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary);
+            background: rgba(15, 23, 42, 0.3);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--secondary);
+        }
+
+        .terminal-line {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+
+        .terminal-prompt {
+            color: var(--primary);
+            margin-right: 0.5rem;
+        }
+
+        .terminal-output {
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+            .endpoint-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="container">
+        <h1 class="title">🔐 SWITCHBOARD ORACLE TERMINAL 🛡️</h1>
+        <div class="subtitle">Trusted Execution Environment (TEE)</div>
+
+        <div class="oracle-info">
+            <h2>📡 Switchboard Oracle</h2>
+            <p>This is a Switchboard Oracle node running in a secure Trusted Execution Environment (TEE). Switchboard Oracles provide secure, reliable, and verifiable data feeds to blockchain networks.</p>
+            
+            <div class="terminal-line">
+                <div class="terminal-prompt">$</div>
+                <div class="terminal-output">Oracle status: ONLINE</div>
+            </div>
+            <div class="terminal-line">
+                <div class="terminal-prompt">$</div>
+                <div class="terminal-output">TEE verification: ACTIVE</div>
+            </div>
+            <div class="terminal-line">
+                <div class="terminal-prompt">$</div>
+                <div class="terminal-output">Data integrity: VERIFIED</div>
+            </div>
+            <div class="terminal-line">
+                <div class="terminal-prompt">$</div>
+                <div class="terminal-output">Oracle version: ORACLE_VERSION_PLACEHOLDER</div>
+            </div>
+        </div>
+
+        <div class="security-info">
+            <h2>🔒 TEE Security Features</h2>
+            <!-- Content will be dynamically populated by JavaScript -->
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="status-emoji">🔒</div>
+                <div>
+                    <div class="status-label">Environment Status</div>
+                    <div class="status-value">SECURE</div>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-emoji">✅</div>
+                <div>
+                    <div class="status-label">Attestation Status</div>
+                    <div class="status-value">VERIFIED</div>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-emoji">🔐</div>
+                <div>
+                    <div class="status-label">Memory Encryption</div>
+                    <div class="status-value">ACTIVE</div>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-emoji">🚀</div>
+                <div>
+                    <div class="status-label">Oracle Status</div>
+                    <div class="status-value">ONLINE</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="oracle-endpoints">
+            <h2>🌐 Oracle Endpoints</h2>
+            <div class="endpoint-tabs">
+                <div class="endpoint-tab active" data-tab="mainnet">Mainnet</div>
+                <div class="endpoint-tab" data-tab="devnet">Devnet</div>
+            </div>
+            
+            <div class="endpoint-content active" id="mainnet-content">
+                <p>Mainnet Oracle API endpoint:</p>
+                <div class="endpoint-url">https://<span id="current-host"></span>/mainnet/gateway/api/v1/test</div>
+                <iframe class="endpoint-frame" id="mainnet-frame" src=""></iframe>
+            </div>
+            
+            <div class="endpoint-content" id="devnet-content">
+                <p>Devnet Oracle API endpoint:</p>
+                <div class="endpoint-url">https://<span id="current-host-dev"></span>/devnet/gateway/api/v1/test</div>
+                <iframe class="endpoint-frame" id="devnet-frame" src=""></iframe>
+            </div>
+        </div>
+
+        <div class="env-grid">
+            <div class="env-item">
+                <div class="env-label">CONTAINER NAME</div>
+                <div class="env-value">HOSTNAME_PLACEHOLDER</div>
+            </div>
+            <div class="env-item">
+                <div class="env-label">TEE TYPE</div>
+                <div class="env-value" data-tee-type>TEE_TYPE_PLACEHOLDER</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by <a href="https://switchboard.xyz" target="_blank" rel="noopener noreferrer">Switchboard</a> | <a href="https://docs.switchboard.xyz/switchboard-protocol/running-a-switchboard-oracle" target="_blank" rel="noopener noreferrer">Documentation</a>
+        </div>
+    </div>
+
+    <script>
+        // Security features configuration for different TEE types
+        const securityFeatures = {
+            'SEV-SNP': {
+                title: '🔒 AMD SEV-SNP Security Features',
+                features: [
+                    '• Memory Encryption (SEV Base Feature)',
+                    '• CPU Register Content Protection (SEV-ES)',
+                    '• Strong Memory Integrity Protection',
+                    '• Protection Against Hypervisor-Based Attacks',
+                    '• Prevention of Data Replay and Memory Re-mapping',
+                    '• Enhanced VM Isolation from Host OS'
+                ],
+                subtitle: 'AMD SEV-SNP Enhanced Security Environment',
+                primaryColor: '#6EE7B7'
+            },
+            'TDX': {
+                title: '🔒 Intel TDX Security Features',
+                features: [
+                    '• Software-based Memory Encryption',
+                    '• Hardware-based VM Isolation',
+                    '• Trusted Execution Environment',
+                    '• Intel IME and TXE Protection'
+                ],
+                subtitle: 'Intel TDX Enhanced Security Environment',
+                primaryColor: '#0EA5E9'
+            },
+            'COCO-DEV': {
+                title: '⚠️ Development Environment',
+                features: [
+                    '• Development Mode - No Hardware Security',
+                    '• Simulated Confidential Container Environment',
+                    '• For Testing and Development Only',
+                    '• No Production Workload Protection'
+                ],
+                subtitle: 'Development & Testing Environment',
+                primaryColor: '#EF4444'
+            }
+        };
+
+        // Function to update the UI based on TEE type
+        function updateUIForTEEType() {
+            const teeTypeElement = document.querySelector('[data-tee-type]');
+            const teeType = teeTypeElement.textContent.trim();
+            const config = securityFeatures[teeType] || securityFeatures['COCO-DEV'];
+
+            // Update security info section
+            const securityInfo = document.querySelector('.security-info');
+            securityInfo.innerHTML = `
+                <h2>${config.title}</h2>
+                ${config.features.map(feature => `<p>${feature}</p>`).join('')}
+            `;
+
+            // Update subtitle
+            document.querySelector('.subtitle').textContent = config.subtitle;
+
+            // Update color scheme
+            document.documentElement.style.setProperty('--primary', config.primaryColor);
+
+            // Update status cards for dev mode
+            if (teeType === 'COCO-DEV') {
+                document.querySelector('.status-grid').style.opacity = '0.7';
+                Array.from(document.querySelectorAll('.status-value')).forEach(el => {
+                    if (el.textContent === 'SECURE') el.textContent = 'DEVELOPMENT';
+                    if (el.textContent === 'VERIFIED') el.textContent = 'SIMULATED';
+                });
+            }
+        }
+
+        // Set up endpoint tabs
+        document.querySelectorAll('.endpoint-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.endpoint-tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all content
+                document.querySelectorAll('.endpoint-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show content for active tab
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.add('active');
+            });
+        });
+
+        // Set up iframe sources and endpoint URLs
+        function setupEndpoints() {
+            const hostname = window.location.hostname;
+            
+            // Set hostname in endpoint URLs
+            document.getElementById('current-host').textContent = hostname;
+            document.getElementById('current-host-dev').textContent = hostname;
+            
+            // Set iframe sources
+            document.getElementById('mainnet-frame').src = `https://${hostname}/mainnet/gateway/api/v1/test`;
+            document.getElementById('devnet-frame').src = `https://${hostname}/devnet/gateway/api/v1/test`;
+        }
+
+        // Matrix background effect
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#6EE7B7';
+            ctx.font = `${fontSize}px 'JetBrains Mono', monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Initialize UI when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUIForTEEType();
+            setupEndpoints();
+        });
+    </script>
+</body>
+</html>
+
