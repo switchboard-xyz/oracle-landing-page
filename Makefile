@@ -23,32 +23,32 @@ help:  ## Display this help message
 ### LANDING PAGE
 ################################################################################
 
-docker-release-landing-page: docker-build-landing-page docker-push-landing-page ## Landing Page: build and push current version
-docker-release-landing-page-latest: docker-release-landing-page docker-tag-landing-page-latest docker-push-landing-page-latest ## Landing Page: build and push latest version
+docker-release-oracle-landing-page: docker-build-oracle-landing-page docker-push-oracle-landing-page ## Landing Page: build and push current version
+docker-release-oracle-landing-page-latest: docker-release-oracle-landing-page docker-tag-oracle-landing-page-latest docker-push-oracle-landing-page-latest ## Landing Page: build and push latest version
 
-docker-build-landing-page: ## Landing Page: build docker image
+docker-build-oracle-landing-page: ## Landing Page: build docker image
 	export TAG="$$(cat ./version | tr '[:upper:]' '[:lower:]')" && \
 	docker buildx build \
 		--platform linux/amd64 \
 		-f ./Dockerfile \
-		-t switchboardlabs/landing-page:"$${TAG}" \
+		-t switchboardlabs/oracle-landing-page:"$${TAG}" \
 		--pull ./ && \
-	echo "\nBuilt switchboardlabs/landing-page:$${TAG}\n"
+	echo "\nBuilt switchboardlabs/oracle-landing-page:$${TAG}\n"
 
-docker-push-landing-page: ## Landing Page: push current version to hub.docker.com
+docker-push-oracle-landing-page: ## Landing Page: push current version to hub.docker.com
 	export TAG="$$(cat ./version | tr '[:upper:]' '[:lower:]')" && \
 	docker push \
-		switchboardlabs/landing-page:"$${TAG}" && \
-	echo "\nPublished switchboardlabs/landing-page:$${TAG}\n"
+		switchboardlabs/oracle-landing-page:"$${TAG}" && \
+	echo "\nPublished switchboardlabs/oracle-landing-page:$${TAG}\n"
 
-docker-tag-landing-page-latest: ## Landing Page: tag current version as latest
+docker-tag-oracle-landing-page-latest: ## Landing Page: tag current version as latest
 	export TAG="$$(cat ./version | tr '[:upper:]' '[:lower:]')" && \
 	docker tag \
-		switchboardlabs/landing-page:"$${TAG}" \
-		switchboardlabs/landing-page:latest
+		switchboardlabs/oracle-landing-page:"$${TAG}" \
+		switchboardlabs/oracle-landing-page:latest
 
-docker-push-landing-page-latest: ## Landing Page: push latest tag to hub.docker.com
+docker-push-oracle-landing-page-latest: ## Landing Page: push latest tag to hub.docker.com
 	docker push \
-		switchboardlabs/landing-page:latest
+		switchboardlabs/oracle-landing-page:latest
 
 # vim: set filetype=make foldmethod=marker foldlevel=0 noexpandtab:
