@@ -313,6 +313,8 @@
     </style>
 </head>
 <body>
+    <!-- Hidden element to store TEE type, default to COCO-DEV -->
+    <div style="display: none;" data-tee-type>TEE_TYPE_PLACEHOLDER</div>
     <canvas id="matrix-canvas"></canvas>
     <div class="container">
         <h1 class="title">🔐 SWITCHBOARD ORACLE TERMINAL 🛡️</h1>
@@ -427,8 +429,9 @@
 
         // Function to update the UI based on TEE type
         function updateUIForTEEType() {
+            // Default to COCO-DEV if no element with data-tee-type is found
             const teeTypeElement = document.querySelector('[data-tee-type]');
-            const teeType = teeTypeElement.textContent.trim();
+            const teeType = teeTypeElement ? teeTypeElement.textContent.trim() : 'COCO-DEV';
             const config = securityFeatures[teeType] || securityFeatures['COCO-DEV'];
 
             // Update security info section
