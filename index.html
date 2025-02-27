@@ -493,7 +493,7 @@
                 <div class="logo-card" id="guardian-logo-card" style="display: none;">
                     <div class="logo-title">Guardian</div>
                     <div class="logo-image">
-                        <img src="guardians.png" alt="Guardian Logo" />
+                        <img src="guardian.png" alt="Guardian Logo" />
                     </div>
                     <div class="logo-status">
                         <span class="status-indicator online"></span>
@@ -546,7 +546,6 @@
         const teeTypeElement = document.querySelector('[data-tee-type]');
         const teeType = teeTypeElement.textContent.trim();
 
-        // Update UI based on TEE type
         function updateUIForTEEType() {
             const teeInfoElement = document.getElementById('tee-info');
 
@@ -560,40 +559,40 @@
             `;
 
             // Set content based on TEE type
-            if (teeType.includes('COCO')) {
+            if (teeType.includes('COCO-DEV')) {
                 teeContent = `
-                    <p>This oracle is running in a Confidential Container (CoCo) environment, providing hardware-level isolation and attestation.</p>
+                    <p>This oracle is running in a Confidential Container (CoCo) development environment, simulating hardware-level isolation and attestation.</p>
                     <div class="terminal-line">
                         <div class="terminal-prompt">$</div>
-                        <div class="terminal-output">TEE Type: Confidential Container (CoCo)</div>
+                        <div class="terminal-output">TEE Type: Confidential Container (CoCo-Dev)</div>
                     </div>
                     <div class="terminal-line">
                         <div class="terminal-prompt">$</div>
-                        <div class="terminal-output">Security Features: Memory Encryption, Hardware Attestation, Secure Boot</div>
+                        <div class="terminal-output">Security Features: Simulated Memory Encryption, Attestation, Secure Boot</div>
+                    </div>
+                    <div class="terminal-line">
+                        <div class="terminal-prompt">$</div>
+                        <div class="terminal-output">Note: Development environment for testing purposes</div>
                     </div>
                 `;
-            } else if (teeType.includes('NITRO')) {
+            } else if (teeType.includes('SEV-SNP')) {
                 teeContent = `
-                    <p>This oracle is running in an AWS Nitro Enclave, providing hardware-level isolation and attestation.</p>
+                    <p>This oracle is running in an AMD SEV-SNP (Secure Encrypted Virtualization-Secure Nested Paging) environment, providing the highest level of hardware-based security isolation.</p>
                     <div class="terminal-line">
                         <div class="terminal-prompt">$</div>
-                        <div class="terminal-output">TEE Type: AWS Nitro Enclave</div>
+                        <div class="terminal-output">TEE Type: AMD SEV-SNP</div>
                     </div>
                     <div class="terminal-line">
                         <div class="terminal-prompt">$</div>
-                        <div class="terminal-output">Security Features: Memory Encryption, Hardware Attestation, Secure Boot</div>
-                    </div>
-                `;
-            } else if (teeType.includes('AZURE')) {
-                teeContent = `
-                    <p>This oracle is running in an Azure Confidential Computing environment, providing hardware-level isolation and attestation.</p>
-                    <div class="terminal-line">
-                        <div class="terminal-prompt">$</div>
-                        <div class="terminal-output">TEE Type: Azure Confidential Computing</div>
+                        <div class="terminal-output">Security Features: Advanced Memory Encryption, Hardware-based Attestation, Secure Boot</div>
                     </div>
                     <div class="terminal-line">
                         <div class="terminal-prompt">$</div>
-                        <div class="terminal-output">Security Features: Memory Encryption, Hardware Attestation, Secure Boot</div>
+                        <div class="terminal-output">Protection: Hypervisor-level Attack Prevention, Memory Integrity Protection</div>
+                    </div>
+                    <div class="terminal-line">
+                        <div class="terminal-prompt">$</div>
+                        <div class="terminal-output">Verification: Cryptographic Measurement of VM State, Secure Key Management</div>
                     </div>
                 `;
             }
