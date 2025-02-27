@@ -320,8 +320,9 @@
 
         <div class="oracle-info">
             <h2>📡 Switchboard Oracle</h2>
-            <p>This is a Switchboard Oracle node running in a secure Trusted Execution Environment (TEE). Switchboard Oracles provide secure, reliable, and verifiable data feeds to blockchain networks.</p>
-            
+            <p>This is a Switchboard Oracle node running in a secure Trusted Execution Environment (TEE).</p>
+            <p>Switchboard Oracles provide secure, reliable, and verifiable data feeds to blockchain networks.</p>
+
             <div class="terminal-line">
                 <div class="terminal-prompt">$</div>
                 <div class="terminal-output">Oracle status: ONLINE</div>
@@ -382,13 +383,13 @@
                 <div class="endpoint-tab active" data-tab="mainnet">Mainnet</div>
                 <div class="endpoint-tab" data-tab="devnet">Devnet</div>
             </div>
-            
+
             <div class="endpoint-content active" id="mainnet-content">
                 <p>Mainnet Oracle API endpoint:</p>
                 <div class="endpoint-url">https://<span id="current-host"></span>/mainnet/gateway/api/v1/test</div>
                 <iframe class="endpoint-frame" id="mainnet-frame" src=""></iframe>
             </div>
-            
+
             <div class="endpoint-content" id="devnet-content">
                 <p>Devnet Oracle API endpoint:</p>
                 <div class="endpoint-url">https://<span id="current-host-dev"></span>/devnet/gateway/api/v1/test</div>
@@ -488,12 +489,12 @@
                 document.querySelectorAll('.endpoint-tab').forEach(t => t.classList.remove('active'));
                 // Add active class to clicked tab
                 tab.classList.add('active');
-                
+
                 // Hide all content
                 document.querySelectorAll('.endpoint-content').forEach(content => {
                     content.classList.remove('active');
                 });
-                
+
                 // Show content for active tab
                 const tabId = tab.getAttribute('data-tab');
                 document.getElementById(`${tabId}-content`).classList.add('active');
@@ -503,11 +504,11 @@
         // Set up iframe sources and endpoint URLs
         function setupEndpoints() {
             const hostname = window.location.hostname;
-            
+
             // Set hostname in endpoint URLs
             document.getElementById('current-host').textContent = hostname;
             document.getElementById('current-host-dev').textContent = hostname;
-            
+
             // Set iframe sources
             document.getElementById('mainnet-frame').src = `https://${hostname}/mainnet/gateway/api/v1/test`;
             document.getElementById('devnet-frame').src = `https://${hostname}/devnet/gateway/api/v1/test`;
