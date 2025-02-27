@@ -8,3 +8,4 @@ COPY default.conf /etc/nginx/conf.d/default.conf
 # script to inject variables in the nginx index.html file
 COPY ./40-inject-env.sh /docker-entrypoint.d/40-inject-env.sh
 RUN chmod +x /docker-entrypoint.d/40-inject-env.sh
+RUN chmod +r /usr/share/nginx/html/*png
