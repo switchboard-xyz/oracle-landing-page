@@ -82,3 +82,27 @@
                 <!-- This content will be updated based on TEE type -->
             </div>
         </div>
+
+        <div class="oracle-endpoints">
+            <h2>🌐 Oracle Endpoints</h2>
+            <div class="endpoint-tabs">
+                <div class="endpoint-tab active" data-tab="mainnet">Mainnet</div>
+                <div class="endpoint-tab" data-tab="devnet">Devnet</div>
+            </div>
+            <div class="endpoint-content active" id="mainnet-content">
+                <div class="endpoint-url">https://<span id="current-host">hostname</span>/mainnet/gateway/api/v1/test</div>
+                <iframe id="mainnet-frame" class="endpoint-frame" src="about:blank"></iframe>
+            </div>
+            <div class="endpoint-content" id="devnet-content">
+                <div class="endpoint-url">https://<span id="current-host-dev">hostname</span>/devnet/gateway/api/v1/test</div>
+                <iframe id="devnet-frame" class="endpoint-frame" src="about:blank"></iframe>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by <a href="https://switchboard.xyz" target="_blank">Switchboard</a> | <a href="https://docs.switchboard.xyz" target="_blank">Documentation</a></p>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
