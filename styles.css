@@ -326,10 +326,35 @@ body {
 }
 
 .logos-container {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
     gap: 2rem;
-    flex-wrap: wrap;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Oracle cards will be in the first row */
+#oracle-mainnet-logo-card,
+#oracle-devnet-logo-card {
+    grid-row: 1;
+}
+
+/* Guardian cards will be in the second row */
+#guardian-mainnet-logo-card,
+#guardian-devnet-logo-card {
+    grid-row: 2;
+}
+
+#oracle-mainnet-logo-card,
+#guardian-mainnet-logo-card {
+    grid-column: 1;
+}
+
+#oracle-devnet-logo-card,
+#guardian-devnet-logo-card {
+    grid-column: 2;
 }
 
 .logo-card {
