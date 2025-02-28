@@ -5,19 +5,19 @@ const teeType = teeTypeElement ? teeTypeElement.textContent.trim() : 'Unknown';
 let serviceEndpoints = {
     guardianMainnet: {
         url: '/mainnet/guardian/api/v1/test',
-        enabled: true // Set to true by default to show the cards
+        enabled: false
     },
     guardianDevnet: {
         url: '/devnet/guardian/api/v1/test',
-        enabled: true // Set to true by default to show the cards
+        enabled: false
     },
     oracleMainnet: {
-        url: '/mainnet/gateway/api/v1/test',
-        enabled: true // Set to true by default to show the cards
+        url: '/mainnet/oracle/api/v1/test',
+        enabled: true
     },
     oracleDevnet: {
-        url: '/devnet/gateway/api/v1/test',
-        enabled: true // Set to true by default to show the cards
+        url: '/devnet/oracle/api/v1/test',
+        enabled: true
     }
 };
 
@@ -96,20 +96,37 @@ function setupEndpoints() {
     }
 
     // Override URLs if custom ones are provided
+    // These variables are injected by env-config.js
     if (typeof GUARDIAN_MAINNET_URL !== 'undefined') {
         serviceEndpoints.guardianMainnet.url = GUARDIAN_MAINNET_URL;
+        console.log(`Using custom Guardian Mainnet URL: ${GUARDIAN_MAINNET_URL}`);
     }
 
     if (typeof GUARDIAN_DEVNET_URL !== 'undefined') {
         serviceEndpoints.guardianDevnet.url = GUARDIAN_DEVNET_URL;
+        console.log(`Using custom Guardian Devnet URL: ${GUARDIAN_DEVNET_URL}`);
     }
 
     if (typeof ORACLE_MAINNET_URL !== 'undefined') {
         serviceEndpoints.oracleMainnet.url = ORACLE_MAINNET_URL;
+        console.log(`Using custom Oracle Mainnet URL: ${ORACLE_MAINNET_URL}`);
     }
 
     if (typeof ORACLE_DEVNET_URL !== 'undefined') {
         serviceEndpoints.oracleDevnet.url = ORACLE_DEVNET_URL;
+        console.log(`Using custom Oracle Devnet URL: ${ORACLE_DEVNET_URL}`);
+    }
+    
+    // Update iframe sources to match the service endpoints
+    const mainnetFrame = document.getElementById('mainnet-frame');
+    const devnetFrame = document.getElementById('devnet-frame');
+    
+    if (mainnetFrame) {
+        mainnetFrame.src = serviceEndpoints.oracleMainnet.url;
+    }
+    
+    if (devnetFrame) {
+        devnetFrame.src = serviceEndpoints.oracleDevnet.url;
     }
 }
 
@@ -213,6 +230,9 @@ async function checkServices() {
         console.error("Error checking Oracle Devnet:", error);
         updateServiceCard('oracle-devnet', serviceEndpoints.oracleDevnet.enabled, false);
     }
+    
+    // Update endpoint tabs to reflect current service status
+    updateEndpointTabs();
 }
 
 // Periodically check services status
@@ -224,11 +244,99 @@ function startServiceMonitoring() {
     setInterval(checkServices, 30000);
 }
 
+// Setup tab functionality for endpoint tabs
+function setupTabFunctionality() {
+    const tabs = document.querySelectorAll('.endpoint-tab');
+    const contents = document.querySelectorAll('.endpoint-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Skip if tab is disabled
+            if (tab.classList.contains('disabled')) {
+                return;
+            }
+            
+            // Remove active class from all tabs and contents
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            const tabName = tab.getAttribute('data-tab');
+            tab.classList.add('active');
+            document.getElementById(`${tabName}-content`).classList.add('active');
+        });
+    });
+}
+
+// Update endpoint tabs based on Oracle enabled/disabled state
+function updateEndpointTabs() {
+    const mainnetTab = document.querySelector('.endpoint-tab[data-tab="mainnet"]');
+    const devnetTab = document.querySelector('.endpoint-tab[data-tab="devnet"]');
+    const mainnetContent = document.getElementById('mainnet-content');
+    const devnetContent = document.getElementById('devnet-content');
+    
+    // Check if Oracle services are enabled
+    const oracleMainnetEnabled = serviceEndpoints.oracleMainnet.enabled;
+    const oracleDevnetEnabled = serviceEndpoints.oracleDevnet.enabled;
+    
+    // Update mainnet tab
+    if (!oracleMainnetEnabled && mainnetTab) {
+        mainnetTab.classList.add('disabled');
+        // If mainnet is disabled but active, activate devnet if it's enabled
+        if (mainnetTab.classList.contains('active') && oracleDevnetEnabled) {
+            mainnetTab.classList.remove('active');
+            mainnetContent.classList.remove('active');
+            devnetTab.classList.add('active');
+            devnetContent.classList.add('active');
+        }
+    } else if (mainnetTab) {
+        mainnetTab.classList.remove('disabled');
+    }
+    
+    // Update devnet tab
+    if (!oracleDevnetEnabled && devnetTab) {
+        devnetTab.classList.add('disabled');
+        // If devnet is disabled but active, activate mainnet if it's enabled
+        if (devnetTab.classList.contains('active') && oracleMainnetEnabled) {
+            devnetTab.classList.remove('active');
+            devnetContent.classList.remove('active');
+            mainnetTab.classList.add('active');
+            mainnetContent.classList.add('active');
+        }
+    } else if (devnetTab) {
+        devnetTab.classList.remove('disabled');
+    }
+    
+    // If both are disabled, hide the entire oracle-endpoints section
+    const endpointsSection = document.querySelector('.oracle-endpoints');
+    if (endpointsSection) {
+        if (!oracleMainnetEnabled && !oracleDevnetEnabled) {
+            endpointsSection.style.display = 'none';
+        } else {
+            endpointsSection.style.display = 'block';
+        }
+    }
+    
+    // Update iframe URLs to use the same endpoint pattern as the service checks
+    const mainnetFrame = document.getElementById('mainnet-frame');
+    const devnetFrame = document.getElementById('devnet-frame');
+    
+    if (mainnetFrame) {
+        mainnetFrame.src = serviceEndpoints.oracleMainnet.url;
+    }
+    
+    if (devnetFrame) {
+        devnetFrame.src = serviceEndpoints.oracleDevnet.url;
+    }
+}
+
 // Initialize UI when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded, initializing...");
     updateUIForTEEType();
     setupEndpoints();
+    setupTabFunctionality();
+    updateEndpointTabs();
     startServiceMonitoring();
 });
 
