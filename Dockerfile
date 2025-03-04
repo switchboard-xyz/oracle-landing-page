@@ -6,6 +6,7 @@ COPY scripts.js /usr/share/nginx/html/scripts.js
 COPY index.html /usr/share/nginx/html/index.html
 COPY guardian.png /usr/share/nginx/html/guardian.png
 COPY oracle.png /usr/share/nginx/html/oracle.png
+COPY favicon.ico /usr/share/nginx/html/favicon.ico
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 # script to inject variables in the nginx index.html file

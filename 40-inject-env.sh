@@ -9,8 +9,7 @@ sed -i "s/TEE_TYPE_PLACEHOLDER/$TEE_TYPE/g" /usr/share/nginx/html/index.html
 sed -i "s/ORACLE_VERSION_PLACEHOLDER/${ORACLE_VERSION:-Unknown}/g" /usr/share/nginx/html/index.html
 
 # Inject environment variables into JavaScript
-# Default ORACLE_ENABLED to true and GUARDIAN_ENABLED to false if not set
-ORACLE_ENABLED_VALUE="${ORACLE_ENABLED:-true}"
+
 # Environment variables for each service and network
 ORACLE_MAINNET_ENABLED_VALUE="${ORACLE_MAINNET_ENABLED:-${ORACLE_ENABLED:-true}}"
 ORACLE_DEVNET_ENABLED_VALUE="${ORACLE_DEVNET_ENABLED:-${ORACLE_ENABLED:-true}}"
